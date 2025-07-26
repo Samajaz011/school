@@ -1,0 +1,154 @@
+{% extends "base.html" %}
+
+{% block title %}My Assignments{% endblock %}
+
+{% block breadcrumbs %}
+<li class="breadcrumb-item"><a href="{{ url_for('teacher_dashboard') }}">Teacher</a></li>
+<li class="breadcrumb-item active">Assignments</li>
+{% endblock %}
+
+{% block sidebar %}
+<ul class="nav flex-column">
+    <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('teacher_dashboard') }}">
+            <i data-feather="home" class="me-2"></i>
+            Dashboard
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link active" href="{{ url_for('teacher_assignments') }}">
+            <i data-feather="file-text" class="me-2"></i>
+            Assignments
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('create_assignment') }}">
+            <i data-feather="plus-circle" class="me-2"></i>
+            Create Assignment
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('code_snippets') }}">
+            <i data-feather="code" class="me-2"></i>
+            Code Library
+        </a>
+    </li>
+</ul>
+{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">My Assignments</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <a href="{{ url_for('create_assignment') }}" class="btn btn-primary">
+            <i data-feather="plus" class="me-1"></i>
+            New Assignment
+        </a>
+    </div>
+</div>
+
+{% if assignments %}
+<div class="row">
+    {% for assignment in assignments %}
+    <div class="col-lg-6 col-xl-4 mb-4">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <h5 class="card-title">{{ assignment.title }}</h5>
+                    <span class="badge bg-{{ 'success' if assignment.is_published else 'secondary' }}">
+                        {{ 'Published' if assignment.is_published else 'Draft' }}
+                    </span>
+                </div>
+                
+                <p class="card-text text-muted small">{{ assignment.description[:100] }}{% if assignment.description|length > 100 %}...{% endif %}</p>
+                
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <small class="text-muted">Class:</small>
+                        <span class="badge bg-primary">{{ assignment.class_obj.name }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <small class="text-muted">Subject:</small>
+                        <span class="badge bg-info">{{ assignment.subject.name }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <small class="text-muted">Due Date:</small>
+                        <small class="text-muted">{{ assignment.due_date|datetime if assignment.due_date else 'No due date' }}</small>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <small class="text-muted">Max Points:</small>
+                        <small class="text-muted">{{ assignment.max_points }}</small>
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <small class="text-muted">Submissions: </small>
+                    <span class="badge bg-warning">{{ assignment.submissions|length }}</span>
+                    
+                    {% if assignment.resources %}
+                    <div class="mt-2">
+                        <small class="text-muted">Resources: </small>
+                        <span class="badge bg-success">{{ assignment.resources|length }}</span>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="card-footer bg-transparent border-top-0">
+                <div class="btn-group w-100 mb-2">
+                    <button class="btn btn-outline-primary btn-sm">
+                        <i data-feather="eye" class="me-1"></i>
+                        View
+                    </button>
+                    <button class="btn btn-outline-secondary btn-sm">
+                        <i data-feather="edit" class="me-1"></i>
+                        Edit
+                    </button>
+                    <button class="btn btn-outline-info btn-sm">
+                        <i data-feather="users" class="me-1"></i>
+                        Submissions
+                    </button>
+                </div>
+                
+                <!-- File Upload Form -->
+                <form method="POST" action="{{ url_for('upload_assignment_resource', assignment_id=assignment.id) }}" 
+                      enctype="multipart/form-data" class="d-flex gap-1">
+                    <input type="file" class="form-control form-control-sm" name="file" 
+                           accept=".txt,.pdf,.png,.jpg,.jpeg,.gif,.doc,.docx,.py,.html,.css,.js,.json">
+                    <button type="submit" class="btn btn-success btn-sm">
+                        <i data-feather="upload" width="14"></i>
+                    </button>
+                </form>
+                
+                <!-- Display Resources -->
+                {% if assignment.resources %}
+                <div class="mt-2">
+                    <small class="text-muted">Files:</small>
+                    {% for resource in assignment.resources %}
+                    <div class="d-flex justify-content-between align-items-center mt-1">
+                        <small class="text-truncate">{{ resource.original_filename }}</small>
+                        <a href="{{ url_for('download_resource', resource_id=resource.id) }}" 
+                           class="btn btn-link btn-sm p-0">
+                            <i data-feather="download" width="14"></i>
+                        </a>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="text-center py-5">
+    <i data-feather="file-plus" class="text-muted mb-4" style="width: 4rem; height: 4rem;"></i>
+    <h4 class="text-muted">No assignments yet</h4>
+    <p class="text-muted">Create your first assignment to get started with your classes.</p>
+    <a href="{{ url_for('create_assignment') }}" class="btn btn-primary">
+        <i data-feather="plus" class="me-2"></i>
+        Create Your First Assignment
+    </a>
+</div>
+{% endif %}
+{% endblock %}

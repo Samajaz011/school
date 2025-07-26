@@ -1,0 +1,154 @@
+{% extends "base.html" %}
+
+{% block title %}Create Assignment{% endblock %}
+
+{% block breadcrumbs %}
+<li class="breadcrumb-item"><a href="{{ url_for('teacher_dashboard') }}">Teacher</a></li>
+<li class="breadcrumb-item"><a href="{{ url_for('teacher_assignments') }}">Assignments</a></li>
+<li class="breadcrumb-item active">Create Assignment</li>
+{% endblock %}
+
+{% block sidebar %}
+<ul class="nav flex-column">
+    <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('teacher_dashboard') }}">
+            <i data-feather="home" class="me-2"></i>
+            Dashboard
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('teacher_assignments') }}">
+            <i data-feather="file-text" class="me-2"></i>
+            Assignments
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link active" href="{{ url_for('create_assignment') }}">
+            <i data-feather="plus-circle" class="me-2"></i>
+            Create Assignment
+        </a>
+    </li>
+</ul>
+{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Create New Assignment</h1>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body">
+                <form action="{{ url_for('create_assignment') }}" method="POST">
+                    <div class="mb-4">
+                        <label for="title" class="form-label">Assignment Title</label>
+                        <input type="text" class="form-control" id="title" name="title" placeholder="e.g., Python Loops and Functions" required>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="description" class="form-label">Description</label>
+                        <textarea class="form-control" id="description" name="description" rows="4" placeholder="Describe the assignment objectives and requirements..." required></textarea>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-4">
+                            <label for="class_id" class="form-label">Class</label>
+                            <select class="form-select" id="class_id" name="class_id" required>
+                                <option value="">Select Class</option>
+                                {% for class in my_classes %}
+                                <option value="{{ class.id }}">{{ class.name }} (Grade {{ class.grade }})</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-6 mb-4">
+                            <label for="subject_id" class="form-label">Subject</label>
+                            <select class="form-select" id="subject_id" name="subject_id" required>
+                                <option value="">Select Subject</option>
+                                {% for subject in subjects %}
+                                <option value="{{ subject.id }}">{{ subject.name }} ({{ subject.grade }})</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-4">
+                            <label for="due_date" class="form-label">Due Date (Optional)</label>
+                            <input type="datetime-local" class="form-control" id="due_date" name="due_date">
+                        </div>
+                        
+                        <div class="col-md-6 mb-4">
+                            <label for="max_points" class="form-label">Maximum Points</label>
+                            <input type="number" class="form-control" id="max_points" name="max_points" value="100" min="1" required>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="starter_code" class="form-label">Starter Code</label>
+                        <textarea class="form-control code-editor" id="starter_code" name="starter_code" rows="8" style="font-family: 'Fira Code', monospace;"># Write your Python code here
+
+def main():
+    # Your solution goes here
+    pass
+
+if __name__ == "__main__":
+    main()</textarea>
+                        <div class="form-text">Provide starter code to help students get started with the assignment.</div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="expected_output" class="form-label">Expected Output (Optional)</label>
+                        <textarea class="form-control" id="expected_output" name="expected_output" rows="4" placeholder="Describe or show the expected output of the program..." style="font-family: 'Fira Code', monospace;"></textarea>
+                        <div class="form-text">Help students understand what their program should produce.</div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ url_for('teacher_assignments') }}" class="btn btn-secondary">
+                            <i data-feather="arrow-left" class="me-1"></i>
+                            Cancel
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i data-feather="save" class="me-1"></i>
+                            Create Assignment
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h6 class="card-title mb-0">
+                    <i data-feather="help-circle" class="me-2"></i>
+                    Assignment Tips
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <h6 class="text-primary">Writing Good Assignments</h6>
+                    <ul class="small text-muted">
+                        <li>Be clear and specific in your description</li>
+                        <li>Provide helpful starter code</li>
+                        <li>Include examples of expected output</li>
+                        <li>Set realistic due dates</li>
+                    </ul>
+                </div>
+                
+                <div class="mb-3">
+                    <h6 class="text-success">Python Best Practices</h6>
+                    <ul class="small text-muted">
+                        <li>Use meaningful variable names</li>
+                        <li>Include comments in starter code</li>
+                        <li>Follow PEP 8 style guidelines</li>
+                        <li>Test your code before assigning</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

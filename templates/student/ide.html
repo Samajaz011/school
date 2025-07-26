@@ -1,0 +1,162 @@
+{% extends "base.html" %}
+
+{% block title %}Python IDE{% endblock %}
+
+{% block breadcrumbs %}
+<li class="breadcrumb-item"><a href="{{ url_for('student_dashboard') }}">Student</a></li>
+<li class="breadcrumb-item active">Python IDE</li>
+{% endblock %}
+
+{% block sidebar %}
+<ul class="nav flex-column">
+    <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('student_dashboard') }}">
+            <i data-feather="home" class="me-2"></i>
+            Dashboard
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link active" href="{{ url_for('python_ide') }}">
+            <i data-feather="code" class="me-2"></i>
+            Python IDE
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('code_snippets') }}">
+            <i data-feather="book" class="me-2"></i>
+            Code Library
+        </a>
+    </li>
+</ul>
+{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Python IDE</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <div class="btn-group me-2">
+            <button id="runCode" class="btn btn-success">
+                <i data-feather="play" class="me-1"></i>
+                Run Code
+            </button>
+            <button id="clearCode" class="btn btn-outline-secondary">
+                <i data-feather="trash-2" class="me-1"></i>
+                Clear
+            </button>
+        </div>
+        <div class="btn-group">
+            <button id="saveCode" class="btn btn-outline-primary">
+                <i data-feather="save" class="me-1"></i>
+                Save
+            </button>
+            <button id="copyCode" class="btn btn-outline-secondary">
+                <i data-feather="copy" class="me-1"></i>
+                Copy
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white border-bottom d-flex justify-content-between align-items-center">
+                <h6 class="card-title mb-0">
+                    <i data-feather="code" class="me-2"></i>
+                    Code Editor
+                </h6>
+                <div class="btn-group btn-group-sm">
+                    <button id="formatCode" class="btn btn-outline-secondary" title="Format code">
+                        <i data-feather="align-left"></i>
+                    </button>
+                    <button class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" title="Examples">
+                        <i data-feather="book"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" href="#" onclick="loadExample('hello_world')">Hello World</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="loadExample('variables')">Variables</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="loadExample('loops')">Loops</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="loadExample('functions')">Functions</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="card-body p-0">
+                <div id="codeEditor" style="height: 500px;"></div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white border-bottom">
+                <h6 class="card-title mb-0">
+                    <i data-feather="terminal" class="me-2"></i>
+                    Output
+                </h6>
+            </div>
+            <div class="card-body">
+                <div id="outputContainer" class="bg-dark text-light p-3 rounded" style="min-height: 300px; font-family: 'Fira Code', monospace;">
+                    <div id="outputContent">Write some Python code and click "Run Code" to see the output here...</div>
+                    <div id="loadingIndicator" class="d-none">
+                        <div class="spinner-border spinner-border-sm text-light me-2" role="status"></div>
+                        Running code...
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card border-0 shadow-sm mt-3">
+            <div class="card-header bg-primary text-white">
+                <h6 class="card-title mb-0">
+                    <i data-feather="help-circle" class="me-2"></i>
+                    Python Tips
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="small">
+                    <div class="mb-3">
+                        <strong>Getting Started:</strong>
+                        <ul class="mt-1">
+                            <li>Use <code>print()</code> to display output</li>
+                            <li>Variables don't need type declaration</li>
+                            <li>Indentation matters in Python</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <strong>Common Functions:</strong>
+                        <ul class="mt-1">
+                            <li><code>input()</code> - Get user input</li>
+                            <li><code>len()</code> - Get length</li>
+                            <li><code>range()</code> - Generate numbers</li>
+                            <li><code>type()</code> - Check data type</li>
+                        </ul>
+                    </div>
+                    
+                    <div>
+                        <strong>Keyboard Shortcuts:</strong>
+                        <ul class="mt-1">
+                            <li><kbd>Ctrl+Enter</kbd> - Run code</li>
+                            <li><kbd>Ctrl+S</kbd> - Save code</li>
+                            <li><kbd>Ctrl+C</kbd> - Copy selected text</li>
+                            <li><kbd>Ctrl+/</kbd> - Comment line</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    window.assignmentData = {
+        id: null,
+        starterCode: '# Welcome to the Python IDE!\n# Write your Python code here and click "Run Code" to execute it.\n\nprint("Hello, World!")\n\n# Try some basic Python:\nname = "Student"\nprint(f"Hello, {name}!")\n\n# Math operations\nresult = 5 + 3 * 2\nprint(f"5 + 3 * 2 = {result}")',
+        submissionCode: null
+    };
+</script>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/ide.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block breadcrumbs %}
+<li class="breadcrumb-item active">Admin Dashboard</li>
+{% endblock %}
+
+{% block sidebar %}
+<ul class="nav flex-column">
+    <li class="nav-item">
+        <a class="nav-link active" href="{{ url_for('admin_dashboard') }}">
+            <i data-feather="home" class="me-2"></i>
+            Dashboard
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('manage_users') }}">
+            <i data-feather="users" class="me-2"></i>
+            Manage Users
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('manage_classes') }}">
+            <i data-feather="book" class="me-2"></i>
+            Manage Classes
+        </a>
+    </li>
+</ul>
+{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Admin Dashboard</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <div class="btn-group me-2">
+            <button type="button" class="btn btn-sm btn-outline-secondary">
+                <i data-feather="download" class="me-1"></i>
+                Export
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="dashboard-grid fade-in">
+    <div class="stat-card hover-lift">
+        <div class="stat-value">{{ total_users }}</div>
+        <div class="stat-label">Total Users</div>
+        <i data-feather="users" class="stat-icon"></i>
+    </div>
+
+    <div class="stat-card secondary hover-lift">
+        <div class="stat-value">{{ total_classes }}</div>
+        <div class="stat-label">Classes</div>
+        <i data-feather="book" class="stat-icon"></i>
+    </div>
+
+    <div class="stat-card warning hover-lift">
+        <div class="stat-value">{{ total_assignments }}</div>
+        <div class="stat-label">Assignments</div>
+        <i data-feather="file-text" class="stat-icon"></i>
+    </div>
+
+    <div class="stat-card danger hover-lift">
+        <div class="stat-value">{{ total_submissions }}</div>
+        <div class="stat-label">Submissions</div>
+        <i data-feather="send" class="stat-icon"></i>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h6 class="card-title mb-0">
+                    <i data-feather="activity" class="me-2"></i>
+                    System Overview
+                </h6>
+            </div>
+            <div class="card-body">
+                <p class="text-muted">Welcome to the Education Management System admin dashboard. Here you can manage users, classes, and monitor system activity.</p>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6 class="text-primary">Quick Actions</h6>
+                        <ul class="list-unstyled">
+                            <li><a href="{{ url_for('manage_users') }}" class="text-decoration-none">
+                                <i data-feather="plus-circle" class="me-1"></i> Add New User
+                            </a></li>
+                            <li><a href="{{ url_for('manage_classes') }}" class="text-decoration-none">
+                                <i data-feather="plus-circle" class="me-1"></i> Create New Class
+                            </a></li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="text-success">System Status</h6>
+                        <p class="small text-muted">
+                            <i data-feather="check-circle" class="text-success me-1"></i>
+                            All systems operational
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

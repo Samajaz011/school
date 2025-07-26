@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+
+{% block title %}{{ snippet.title }} - Code Snippet{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h2>{{ snippet.title }}</h2>
+                    <div class="d-flex align-items-center gap-3 text-muted">
+                        <span><i data-feather="user" width="16"></i> {{ snippet.creator.full_name }}</span>
+                        <span><i data-feather="calendar" width="16"></i> {{ snippet.created_at.strftime('%B %d, %Y') }}</span>
+                        <span><i data-feather="eye" width="16"></i> {{ snippet.view_count }} views</span>
+                        <span class="badge bg-secondary">{{ snippet.language }}</span>
+                    </div>
+                </div>
+                <div class="d-flex gap-2">
+                    <button id="copyCodeBtn" class="btn btn-outline-primary">
+                        <i data-feather="copy"></i> Copy Code
+                    </button>
+                    <a href="{{ url_for('code_snippets') }}" class="btn btn-outline-secondary">
+                        <i data-feather="arrow-left"></i> Back to Library
+                    </a>
+                </div>
+            </div>
+
+            {% if snippet.description %}
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h6 class="card-title">Description</h6>
+                    <p class="card-text">{{ snippet.description }}</p>
+                </div>
+            </div>
+            {% endif %}
+
+            {% if snippet.tags %}
+            <div class="mb-3">
+                <strong>Tags:</strong>
+                {% for tag in snippet.tags.split(',') %}
+                <span class="badge bg-light text-dark me-1">#{{ tag.strip() }}</span>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h6 class="mb-0">Code</h6>
+                    <button id="copyCodeBtn2" class="btn btn-sm btn-outline-primary">
+                        <i data-feather="copy" width="16"></i> Copy
+                    </button>
+                </div>
+                <div class="card-body p-0">
+                    <div id="code-viewer" style="height: 400px;"></div>
+                </div>
+            </div>
+
+            <!-- Hidden textarea for copying -->
+            <textarea id="code-content" style="position: absolute; left: -9999px;">{{ snippet.code }}</textarea>
+        </div>
+    </div>
+</div>
+
+<script>
+// Initialize Monaco Editor in read-only mode
+require.config({ paths: { vs: 'https://cdn.jsdelivr.net/npm/monaco-editor@0.41.0/min/vs' } });
+require(['vs/editor/editor.main'], function () {
+    var editor = monaco.editor.create(document.getElementById('code-viewer'), {
+        value: {{ snippet.code|tojson }},
+        language: '{{ snippet.language }}',
+        theme: 'vs',
+        fontSize: 14,
+        lineNumbers: 'on',
+        minimap: { enabled: false },
+        automaticLayout: true,
+        wordWrap: 'on',
+        readOnly: true,
+        scrollBeyondLastLine: false
+    });
+});
+
+// Copy to clipboard functionality
+function copyToClipboard() {
+    const codeContent = document.getElementById('code-content');
+    codeContent.select();
+    codeContent.setSelectionRange(0, 99999); // For mobile devices
+    
+    navigator.clipboard.writeText(codeContent.value).then(function() {
+        // Show success feedback
+        const copyBtns = document.querySelectorAll('#copyCodeBtn, #copyCodeBtn2');
+        copyBtns.forEach(btn => {
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i data-feather="check"></i> Copied!';
+            btn.classList.remove('btn-outline-primary');
+            btn.classList.add('btn-success');
+            
+            setTimeout(() => {
+                btn.innerHTML = originalText;
+                btn.classList.remove('btn-success');
+                btn.classList.add('btn-outline-primary');
+                feather.replace(); // Re-render feather icons
+            }, 2000);
+        });
+    }).catch(function(err) {
+        console.error('Could not copy text: ', err);
+        alert('Copy failed. Please select and copy manually.');
+    });
+}
+
+// Add event listeners
+document.getElementById('copyCodeBtn').addEventListener('click', copyToClipboard);
+document.getElementById('copyCodeBtn2').addEventListener('click', copyToClipboard);
+</script>
+{% endblock %}

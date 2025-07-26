@@ -1,0 +1,147 @@
+{% extends "base.html" %}
+
+{% block title %}{{ assignment.title }}{% endblock %}
+
+{% block breadcrumbs %}
+<li class="breadcrumb-item"><a href="{{ url_for('student_dashboard') }}">Student</a></li>
+<li class="breadcrumb-item active">{{ assignment.title }}</li>
+{% endblock %}
+
+{% block sidebar %}
+<ul class="nav flex-column">
+    <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('student_dashboard') }}">
+            <i data-feather="home" class="me-2"></i>
+            Dashboard
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('python_ide') }}">
+            <i data-feather="code" class="me-2"></i>
+            Python IDE
+        </a>
+    </li>
+</ul>
+{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">{{ assignment.title }}</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        {% if submission %}
+        <span class="badge bg-success me-2 fs-6">Submitted {{ submission.submitted_at|timeago }}</span>
+        {% endif %}
+        <button id="runCode" class="btn btn-success me-2">
+            <i data-feather="play" class="me-1"></i>
+            Run Code
+        </button>
+        <button id="submitAssignment" class="btn btn-primary">
+            <i data-feather="send" class="me-1"></i>
+            {{ 'Update Submission' if submission else 'Submit Assignment' }}
+        </button>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-4">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h6 class="card-title mb-0">
+                    <i data-feather="info" class="me-2"></i>
+                    Assignment Details
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <strong>Class:</strong> {{ assignment.class_obj.name }}<br>
+                    <strong>Subject:</strong> {{ assignment.subject.name }}<br>
+                    {% if assignment.due_date %}
+                    <strong>Due Date:</strong> {{ assignment.due_date|datetime }}<br>
+                    {% endif %}
+                    <strong>Max Points:</strong> {{ assignment.max_points }}
+                </div>
+                
+                <div class="mb-3">
+                    <h6 class="text-primary">Description</h6>
+                    <p class="small">{{ assignment.description }}</p>
+                </div>
+                
+                {% if assignment.expected_output %}
+                <div class="mb-3">
+                    <h6 class="text-success">Expected Output</h6>
+                    <pre class="bg-light p-2 rounded small"><code>{{ assignment.expected_output }}</code></pre>
+                </div>
+                {% endif %}
+                
+                {% if submission %}
+                <div class="border-top pt-3">
+                    <h6 class="text-info">Your Submission</h6>
+                    <div class="small">
+                        <strong>Submitted:</strong> {{ submission.submitted_at|datetime }}<br>
+                        {% if submission.points_earned %}
+                        <strong>Score:</strong> {{ submission.points_earned }}/{{ assignment.max_points }}<br>
+                        {% endif %}
+                        {% if submission.feedback %}
+                        <strong>Feedback:</strong> {{ submission.feedback }}
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-8">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white border-bottom d-flex justify-content-between align-items-center">
+                <h6 class="card-title mb-0">
+                    <i data-feather="code" class="me-2"></i>
+                    Python Code Editor
+                </h6>
+                <div class="btn-group btn-group-sm">
+                    <button id="resetCode" class="btn btn-outline-secondary" title="Reset to starter code">
+                        <i data-feather="refresh-cw"></i>
+                    </button>
+                    <button id="formatCode" class="btn btn-outline-secondary" title="Format code">
+                        <i data-feather="align-left"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="card-body p-0">
+                <div id="codeEditor" style="height: 400px;"></div>
+            </div>
+        </div>
+        
+        <div class="card border-0 shadow-sm mt-3">
+            <div class="card-header bg-white border-bottom">
+                <h6 class="card-title mb-0">
+                    <i data-feather="terminal" class="me-2"></i>
+                    Output
+                </h6>
+            </div>
+            <div class="card-body">
+                <div id="outputContainer" class="bg-dark text-light p-3 rounded" style="min-height: 120px; font-family: 'Fira Code', monospace;">
+                    <div id="outputContent">Click "Run Code" to see the output here...</div>
+                    <div id="loadingIndicator" class="d-none">
+                        <div class="spinner-border spinner-border-sm text-light me-2" role="status"></div>
+                        Running code...
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Starter code and submission data -->
+<script>
+    window.assignmentData = {
+        id: {{ assignment.id }},
+        starterCode: {{ assignment.starter_code|tojson }},
+        submissionCode: {{ submission.code|tojson if submission else 'null' }}
+    };
+</script>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/ide.js') }}"></script>
+{% endblock %}

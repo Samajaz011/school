@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+
+{% block title %}Code Snippets Library{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>Code Snippets Library</h2>
+                <div class="d-flex gap-2">
+                    <a href="{{ url_for('create_snippet') }}" class="btn btn-primary">
+                        <i data-feather="plus"></i> Share Code
+                    </a>
+                </div>
+            </div>
+
+            <!-- Search Bar -->
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <form method="GET" action="{{ url_for('code_snippets') }}">
+                        <div class="input-group">
+                            <input type="text" class="form-control" name="search" 
+                                   placeholder="Search snippets..." value="{{ search }}">
+                            <button class="btn btn-outline-secondary" type="submit">
+                                <i data-feather="search"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Snippets Grid -->
+            <div class="row">
+                {% for snippet in snippets.items %}
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ snippet.title }}</h5>
+                            <p class="card-text text-muted small">{{ snippet.description[:100] }}...</p>
+                            
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="badge bg-secondary">{{ snippet.language }}</span>
+                                <small class="text-muted">
+                                    <i data-feather="eye" width="14" height="14"></i> {{ snippet.view_count }}
+                                </small>
+                            </div>
+                            
+                            {% if snippet.tags %}
+                            <div class="mb-2">
+                                {% for tag in snippet.tags.split(',') %}
+                                <span class="badge bg-light text-dark me-1">#{{ tag.strip() }}</span>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                            
+                            <div class="d-flex justify-content-between align-items-center">
+                                <small class="text-muted">
+                                    by {{ snippet.creator.full_name }}
+                                </small>
+                                <a href="{{ url_for('view_snippet', snippet_id=snippet.id) }}" 
+                                   class="btn btn-outline-primary btn-sm">
+                                    <i data-feather="code"></i> View
+                                </a>
+                            </div>
+                        </div>
+                        <div class="card-footer bg-light">
+                            <small class="text-muted">
+                                Created {{ snippet.created_at.strftime('%B %d, %Y') }}
+                            </small>
+                        </div>
+                    </div>
+                </div>
+                {% else %}
+                <div class="col-12">
+                    <div class="text-center py-5">
+                        <i data-feather="code" width="48" height="48" class="text-muted mb-3"></i>
+                        <h4 class="text-muted">No code snippets found</h4>
+                        <p class="text-muted">Be the first to share a code snippet!</p>
+                        <a href="{{ url_for('create_snippet') }}" class="btn btn-primary">
+                            <i data-feather="plus"></i> Share Your Code
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Pagination -->
+            {% if snippets.pages > 1 %}
+            <nav aria-label="Page navigation">
+                <ul class="pagination justify-content-center">
+                    {% if snippets.has_prev %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('code_snippets', page=snippets.prev_num, search=search) }}">Previous</a>
+                    </li>
+                    {% endif %}
+                    
+                    {% for page_num in snippets.iter_pages() %}
+                        {% if page_num %}
+                            {% if page_num != snippets.page %}
+                            <li class="page-item">
+                                <a class="page-link" href="{{ url_for('code_snippets', page=page_num, search=search) }}">{{ page_num }}</a>
+                            </li>
+                            {% else %}
+                            <li class="page-item active">
+                                <span class="page-link">{{ page_num }}</span>
+                            </li>
+                            {% endif %}
+                        {% else %}
+                        <li class="page-item disabled">
+                            <span class="page-link">...</span>
+                        </li>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {% if snippets.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('code_snippets', page=snippets.next_num, search=search) }}">Next</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

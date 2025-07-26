@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block title %}Login - Education Management System{% endblock %}
+
+{% block content %}
+<div class="login-container">
+    <div class="login-card">
+        <div class="text-center mb-4">
+            <div class="login-icon">
+                <i data-feather="book-open"></i>
+            </div>
+            <h1 class="h3 mb-3 fw-normal">Education Management System</h1>
+            <p class="text-muted">Sign in to your account</p>
+        </div>
+        
+        <form method="POST">
+            <div class="form-floating mb-3">
+                <input type="text" class="form-control" id="username" name="username" placeholder="Username" required>
+                <label for="username">Username</label>
+            </div>
+            
+            <div class="form-floating mb-3">
+                <input type="password" class="form-control" id="password" name="password" placeholder="Password" required>
+                <label for="password">Password</label>
+            </div>
+            
+            <div class="d-grid">
+                <button class="btn btn-primary btn-lg" type="submit">
+                    <i data-feather="log-in" class="me-2"></i>
+                    Sign in
+                </button>
+            </div>
+        </form>
+        
+        
+    </div>
+</div>
+{% endblock %}
